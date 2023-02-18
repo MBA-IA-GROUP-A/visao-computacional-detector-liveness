@@ -5,6 +5,8 @@ import numpy as np
 import cv2
 import tensorflow as tf
 import io
+import os
+from os import path
 
 """
 # Computer Vision
@@ -19,6 +21,10 @@ exibir sua probabilidade da classe de predição.
 """
 
 IMAGE_SIZE = [192, 192]
+if (not str(path.exists('streamlit-app//model.h5'))):
+    st.error('Modelo não encontrado! Tente novamente mais tarde.')
+    st.stop()
+
 model = tf.keras.models.load_model('streamlit-app//model.h5')
 
 uploaded_file = st.file_uploader('Tente uma outra imagem', type=["png", "jpg"])
