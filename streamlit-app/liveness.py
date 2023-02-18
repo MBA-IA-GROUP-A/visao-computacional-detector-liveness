@@ -3,6 +3,7 @@ import streamlit as st
 # working with sample data.
 import numpy as np
 import cv2
+import tensorflow as tf
 import io
 
 """
@@ -16,6 +17,9 @@ Um modelo de classificação deve ser capaz de ler uma imagem da webcam, classif
 exibir sua probabilidade da classe de predição.
 
 """
+
+IMAGE_SIZE = [192, 192]
+model = tf.keras.models.load_model('streamlit-app//model.h5')
 
 uploaded_file = st.file_uploader('Tente uma outra imagem', type=["png", "jpg"])
 if uploaded_file is not None:
@@ -49,4 +53,19 @@ if camera or uploaded_file:
 
         st.image(imagem_anot, channels="BGR")
 
-    st.success('Imagem com Vivacidade, probabilidade de 87%!')
+        if len(faces) == 0:
+            st.error('Não foi possível detectar uma face!')
+        else:
+            for face in faces:
+                (x, y, w, h) = face
+                face = imagem_gray[y:y+h, x:x+w]
+                face = cv2.resize(face, IMAGE_SIZE,
+                                  interpolation=cv2.INTER_LANCZOS4)
+                face = face.reshape(1, IMAGE_SIZE[0], IMAGE_SIZE[1], 1)
+                prob = model.predict(face)[0][0]
+                if prob > 0.5:
+                    st.success('Imagem com Vivacidade, probabilidade de {}%!'.format(
+                        round(prob * 100, 2)))
+                else:
+                    st.error('Imagem sem Vivacidade, probabilidade de {}%!'.format(
+                        round(prob * 100, 2)))
