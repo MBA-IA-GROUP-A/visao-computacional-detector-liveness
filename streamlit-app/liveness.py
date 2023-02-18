@@ -24,11 +24,13 @@ if uploaded_file is not None:
     st.image(imagem, channels="BGR")
 
 
-camera = st.camera_input("Tire sua foto", help="Lembre-se de permitir ao seu navegador o acesso a sua câmera.")
+camera = st.camera_input(
+    "Tire sua foto", help="Lembre-se de permitir ao seu navegador o acesso a sua câmera.")
 
 if camera is not None:
     bytes_data = camera.getvalue()
-    imagem = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
+    imagem = cv2.imdecode(np.frombuffer(
+        bytes_data, np.uint8), cv2.IMREAD_COLOR)
 
 
 if camera or uploaded_file:
@@ -36,7 +38,8 @@ if camera or uploaded_file:
     with st.spinner('Classificando imagem...'):
         imagem_gray = cv2.cvtColor(imagem, cv2.COLOR_BGR2GRAY)
 
-        classificador_face = cv2.CascadeClassifier('streamlit-app//haarcascade_frontalface_default.xml')
+        classificador_face = cv2.CascadeClassifier(
+            'streamlit-app//haarcascade_frontalface_default.xml')
         faces = classificador_face.detectMultiScale(imagem_gray, 1.3, 3)
 
         imagem_anot = imagem.copy()
@@ -45,5 +48,5 @@ if camera or uploaded_file:
             cv2.rectangle(imagem_anot, (x, y), (x+w, y+h), (0, 0, 255), 2)
 
         st.image(imagem_anot, channels="BGR")
-    
+
     st.success('Imagem com Vivacidade, probabilidade de 87%!')
